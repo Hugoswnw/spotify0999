@@ -1,0 +1,16 @@
+version : "3.3"
+services:
+  neo4j:
+    image: "neo4j:3.5.32-community"
+    volumes:
+      - /data/sp09999/volumes/neo4j-db/:/data
+    ports:
+      - 7474:7474
+      - 7687:7687
+  notebooks:
+    build: jupyter-nb/
+    volumes:
+      - /data/sp09999/volumes/notebooks/:/jupyter/notebooks/
+    ports:
+      - 8888:8888
+    command: jupyter-lab --ip=0.0.0.0 --no-browser --allow-root --notebook-dir=/jupyter/notebooks/
