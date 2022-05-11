@@ -1,6 +1,8 @@
 FROM continuumio/miniconda3:4.11.0
 
-WORKDIR /jupyter
+COPY scraping /python/scraping
+
+WORKDIR /python
 RUN conda install \
     networkx \
     neo4j-python-driver \
@@ -10,5 +12,3 @@ RUN conda install \
     progress \
     matplotlib \
     jupyterlab
-
-EXPOSE 8888

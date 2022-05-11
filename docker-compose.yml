@@ -3,14 +3,27 @@ services:
   neo4j:
     image: "neo4j:3.5.32-community"
     volumes:
-      - /data/sp09999/volumes/neo4j-db/:/data
+      - /data/volumes/sp09999/neo4j-db/:/data
     ports:
       - 7474:7474
       - 7687:7687
+    environment:
+      - NEO4J_AUTH=neo4j/ouiouioui
   notebooks:
-    build: jupyter-nb/
+    build: miniconda/
     volumes:
-      - /data/sp09999/volumes/notebooks/:/jupyter/notebooks/
+      - /data/volumes/sp09999/python/notebooks/:/python/notebooks/
+      - /data/volumes/sp09999/python/data/:/python/data/
     ports:
       - 8888:8888
-    command: jupyter-lab --ip=0.0.0.0 --no-browser --allow-root --notebook-dir=/jupyter/notebooks/
+    links:
+      - "neo4j:database"
+    command: jupyter-lab --ip=0.0.0.0 --no-browser --allow-root --notebook-dir=/python/
+  fill-db:
+    build: miniconda/
+    volumes:
+      - /data/volumes/sp09999/python/notebooks/:/python/notebooks/
+      - /data/volumes/sp09999/python/data/:/python/data/
+    command: python scraping/merge_dump_into_neo4j.py
+    links:
+      - "neo4j:database"
