@@ -9,7 +9,6 @@ import os, sys
 
 from core.spotify_graph import *
 
-slices = os.listdir(json_src)
 uri = "bolt://database:7687/"
 regex = re.compile("data.*\.json")
 with GraphDatabase.driver(uri, auth=("neo4j", "ouiouioui"), encrypted=False) as driver:
