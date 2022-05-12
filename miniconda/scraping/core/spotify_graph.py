@@ -73,4 +73,4 @@ def get_named_entity_count(tx, entity, name):
 def artist_tfidf_neighbors(session, name):
     res = session.read_transaction(get_coplaylist_artist_counts, name)
     res = {artist : count/session.read_transaction(get_named_entity_count, "Artist", artist) for artist, count in res.items()}
-    return {k : v for k,v in sorted(res.items(), key= lambda x : x[1], reverse=True)}
+    return {k : v for k,v in sorted(res.items(), key= lambda x : x[1], reverse=False)}

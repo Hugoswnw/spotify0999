@@ -1,5 +1,6 @@
 version : "3.3"
 services:
+
   neo4j:
     image: "neo4j:3.5.32-community"
     volumes:
@@ -9,6 +10,7 @@ services:
       - 7687:7687
     environment:
       - NEO4J_AUTH=neo4j/ouiouioui
+
   notebooks:
     build: miniconda/
     volumes:
@@ -19,6 +21,7 @@ services:
     links:
       - "neo4j:database"
     command: jupyter-lab --ip=0.0.0.0 --no-browser --allow-root --notebook-dir=/python/
+
   fill-db:
     build: miniconda/
     volumes:
@@ -26,8 +29,18 @@ services:
     command: python scraping/merge_dump_into_neo4j.py
     links:
       - "neo4j:database"
+
   counts:
     build: miniconda/
     command: python scraping/get_db_counts.py
     links:
       - "neo4j:database"
+
+  tfidf:
+    build: miniconda/
+    command: python scraping/get_artist_tfidf.py
+    links:
+      - "neo4j:database"
+    environment:
+      - ARTIST
+
