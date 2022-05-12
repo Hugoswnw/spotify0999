@@ -44,3 +44,33 @@ def get_coplaylist_artist_counts(tx, artist_partial_name):
         RETURN m.name, count(m) 
         ORDER BY count(m) DESC
     """, playlist_pid=playlist_pid, track_uri=track_uri)
+
+def get_coplaylist_artist_counts(tx, artist_partial_name):
+    res = tx.run(f"""
+        MATCH (n:Artist)--(:Album)--(:Track)--(p:Playlist), 
+        (m:Artist)--(:Album)--(:Track)--(p:Playlist) 
+        WHERE n.name CONTAINS "{artist_partial_name}"
+        RETURN m.name as name, count(m) as count 
+        ORDER BY count(m) DESC
+    """)
+    return {r["name"] : r["count"] for r in res}
+
+def get_entity_count(tx, entity):
+    res = tx.run(f"""
+        MATCH (:{entity})
+        RETURN count(*) as count
+    """)
+    return res.single()["count"]
+
+def get_named_entity_count(tx, entity, name):
+    res = tx.run(f"""
+        MATCH (n:{entity})--(:Album)--(t:Track)--(p:Playlist)
+        WHERE n.name = "{name}"
+        RETURN count(*) as count
+    """)
+    return res.single()["count"]
+
+def artist_tfidf_neighbors(session, name):
+    res = session.read_transaction(get_coplaylist_artist_counts, name)
+    res = {artist : count/session.read_transaction(get_named_entity_count, "Artist", artist) for artist, count in res.items()}
+    return {k : v for k,v in sorted(res.items(), key= lambda x : x[1], reverse=True)}

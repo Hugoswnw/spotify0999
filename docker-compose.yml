@@ -22,8 +22,12 @@ services:
   fill-db:
     build: miniconda/
     volumes:
-      - /data/volumes/sp09999/python/notebooks/:/python/notebooks/
       - /data/volumes/sp09999/python/data/:/python/data/
     command: python scraping/merge_dump_into_neo4j.py
+    links:
+      - "neo4j:database"
+  counts:
+    build: miniconda/
+    command: python scraping/get_db_counts.py
     links:
       - "neo4j:database"
