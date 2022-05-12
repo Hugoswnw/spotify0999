@@ -44,3 +44,10 @@ services:
     environment:
       - ARTIST
 
+  search-name:
+    build: miniconda/
+    command: python scraping/search_artists_name.py
+    links:
+      - "neo4j:database"
+    environment:
+      - ARTIST

@@ -74,3 +74,11 @@ def artist_tfidf_neighbors(session, name):
     res = session.read_transaction(get_coplaylist_artist_counts, name)
     res = {artist : count/session.read_transaction(get_named_artist_songs_count, artist) for artist, count in res.items()}
     return {k : v for k,v in sorted(res.items(), key= lambda x : x[1], reverse=False)}
+
+def search_entity_names(tx, entity, name):
+    res = tx.run(f"""
+        MATCH (n:{entity})
+        WHERE toLower(n.name) CONTAINS '{name.lower()}'
+        RETURN n.name as name
+    """)
+    return [r["name"] for r in res]
