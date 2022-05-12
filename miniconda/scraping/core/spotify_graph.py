@@ -62,15 +62,15 @@ def get_entity_count(tx, entity):
     """)
     return res.single()["count"]
 
-def get_named_entity_count(tx, entity, name):
-    res = tx.run(f"""
-        MATCH (n:{entity})--(:Album)--(t:Track)--(p:Playlist)
-        WHERE n.name = "{name}"
+def get_named_artist_songs_count(tx, name):
+    res = tx.run("""
+        MATCH (n:Artist)--(:Album)--(t:Track)--(p:Playlist)
+        WHERE n.name = $name
         RETURN count(*) as count
-    """)
+    """, name=name)
     return res.single()["count"]
 
 def artist_tfidf_neighbors(session, name):
     res = session.read_transaction(get_coplaylist_artist_counts, name)
-    res = {artist : count/session.read_transaction(get_named_entity_count, "Artist", artist) for artist, count in res.items()}
+    res = {artist : count/session.read_transaction(get_named_artist_songs_count, artist) for artist, count in res.items()}
     return {k : v for k,v in sorted(res.items(), key= lambda x : x[1], reverse=False)}
