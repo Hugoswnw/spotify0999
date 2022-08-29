@@ -62,6 +62,13 @@ def get_entity_count(tx, entity):
     """)
     return res.single()["count"]
 
+def get_entities_edge_count(tx, entity_a, entity_b):
+    res = tx.run(f"""
+        MATCH (:{entity_a})-[e]-({entity_b})
+        RETURN count(e) as count
+    """)
+    return res.single()["count"]
+
 def get_named_artist_songs_count(tx, name):
     res = tx.run("""
         MATCH (n:Artist)--(:Album)--(t:Track)--(p:Playlist)

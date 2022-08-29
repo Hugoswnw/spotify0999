@@ -8,4 +8,4 @@ filling database with json dumps :
 
 get database entities counts : 
     
-    docker-compose up -d counts
+    docker-compose up counts
