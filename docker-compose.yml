@@ -28,7 +28,7 @@ services:
     build: miniconda/
     volumes:
       - ${VOLUMES_PATH}/python/data/:/python/data/
-    command: python scraping/merge_dump_into_neo4j.py
+    command: python scraping/merge_from_dump.py
     links:
       - "neo4j:database"
 
