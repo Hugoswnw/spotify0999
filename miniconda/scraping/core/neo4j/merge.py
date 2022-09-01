@@ -23,3 +23,18 @@ def merge_link_album_track(tx, album_uri, track_uri):
         MATCH (album:Album {uri: $album_uri}), (track:Track {uri: $track_uri})
         MERGE (album)-[:CONTAINS]->(track)
     """, album_uri=album_uri, track_uri=track_uri)
+
+
+def merge_link_artist_genre(tx, artist_uri, genre_name):
+    return tx.run("""
+        MATCH (artist:Artist {uri: $artist_uri}), (genre:Genre {name: $genre_name})
+        MERGE (artist)-[:BELONGS]->(genre)
+    """, artist_uri=artist_uri, genre_name=genre_name)
+
+
+def merge_artist_update_date(tx, artist_id):
+    return tx.run("""
+        MATCH (artist:Artist {id: $artist_id})
+        SET artist.update_date = date($date)
+        RETURN artist
+    """, artist_id=artist_id, date=date.today().strftime("%Y-%m-%d"))

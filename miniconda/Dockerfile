@@ -1,7 +1,5 @@
 FROM continuumio/miniconda3:4.11.0
 
-COPY scraping /python/scraping
-
 WORKDIR /python
 RUN conda install \
     networkx \
@@ -12,3 +10,5 @@ RUN conda install \
     progress \
     matplotlib \
     jupyterlab
+
+COPY scraping /python/scraping

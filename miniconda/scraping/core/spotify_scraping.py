@@ -1,6 +1,8 @@
 import base64
 import os
 from datetime import datetime
+
+import numpy as np
 import requests as requests
 import json
 
@@ -68,3 +70,34 @@ def search_playlists(token, keyword, limit=50):
 def query_playlist_tracks(token, playlist_id):
     r = query(token, f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks")
     return r
+
+def query_artist_albums(token, artist_id, limit=50):
+    albums = []
+    curr_offset = 0
+    total_amount = np.inf
+    while len(albums) < total_amount:
+        params = {
+            "limit" : limit,
+            "offset": curr_offset,
+            "include_groups": "album,single"
+        }
+        r = query(token, f"https://api.spotify.com/v1/artists/{artist_id}/albums", params=params)
+        albums = albums + r["items"]
+        total_amount = r["total"]
+        curr_offset += limit
+    return albums
+
+def query_album_tracks(token, album_id, limit=50):
+    tracks = []
+    curr_offset = 0
+    total_amount = np.inf
+    while len(tracks) < total_amount:
+        params = {
+            "limit" : limit,
+            "offset": curr_offset
+        }
+        r = query(token, f"https://api.spotify.com/v1/albums/{album_id}/tracks", params=params)
+        tracks = tracks + r["items"]
+        total_amount = r["total"]
+        curr_offset += limit
+    return tracks

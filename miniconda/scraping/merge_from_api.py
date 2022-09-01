@@ -31,20 +31,24 @@ with GraphDatabase.driver(uri, auth=("neo4j", "ouiouioui"), encrypted=False) as 
 
                 merge_entity(session, "Playlist", **{k : playlist[k] for k in ['description', 'id', "uri", 'name']})
                 for track in playlist_tracks["items"]:
+                    for artist in track["track"]["artists"]:
+                        try:
+                            merge_entity(session, "Artist", **{k : artist[k] for k in ['id', 'name', 'uri']})
+                            merge_link_artist_track(session, artist["uri"], track["track"]["uri"])
+                        except Exception as e:
+                            print(e)
+
                     try:
                         album = track["track"]["album"]
-                        for artist in track["track"]["artists"]:
-                            try:
-                                merge_entity(session, "Artist", **{k : artist[k] for k in ['id', 'name', 'uri']})
-                                merge_link_artist_track(session, artist["uri"], track["track"]["uri"])
-                            except Exception as e:
-                                print(e)
-
                         merge_entity(session, "Album", **{k : album[k] for k in ['album_type', 'id', 'name', 'uri', 'release_date']})
                         merge_link_album_track(session, album["uri"], track["track"]["uri"])
+                    except Exception as e:
+                        print(e)
 
+                    try:
                         merge_entity(session, "Track", **{k : track["track"][k] for k in ['duration_ms', 'explicit', 'id', 'name', 'uri', 'popularity']})
                         merge_link_playlist_track(session, playlist["uri"], track["track"]["uri"])
                     except Exception as e:
                         print(e)
+
             sleep(.1)

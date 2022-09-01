@@ -43,6 +43,17 @@ services:
       - CLIENT_ID
       - CLIENT_SECRET
 
+  fill-featurings:
+    build: miniconda/
+    volumes:
+      - ${VOLUMES_PATH}/python/data/:/python/data/
+    command: python scraping/query_merge_featurings.py
+    links:
+      - "neo4j:database"
+    environment:
+      - CLIENT_ID
+      - CLIENT_SECRET
+
   counts:
     build: miniconda/
     command: python scraping/get_db_counts.py

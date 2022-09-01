@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def get_coplaylist_artist_counts(tx, artist_partial_name):
     res = tx.run(
         f'MATCH (u:Artist)--(:Track)--(:Playlist)--(:Track)--(v:Artist) WHERE u.name CONTAINS "{artist_partial_name}" RETURN v.name, count(*)')
@@ -38,3 +41,15 @@ def get_entity_names(tx, entity, name):
     """)
     return [r["name"] for r in res]
 
+
+def get_featuring_artists(tx, artist_id):
+    res = tx.run("""
+        MATCH (u:Artist)
+        WHERE u.id = $artist_id
+        RETURN u.name as name, u.id as id, CASE u.update_date WHEN NULL THEN toInteger(2^16) ELSE duration.inDays(u.update_date, localdatetime()).days END AS last_update, 0 AS distance
+        UNION
+        MATCH (u:Artist)--(t:Track)--(v:Artist)
+        WHERE u.id = $artist_id AND u <> v
+        RETURN v.name as name, v.id as id, CASE v.update_date WHEN NULL THEN toInteger(2^16) ELSE duration.inDays(v.update_date, localdatetime()).days END AS last_update, 1 AS distance
+    """, artist_id=artist_id)
+    return pd.DataFrame(res.data())
