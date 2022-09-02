@@ -31,6 +31,10 @@ with GraphDatabase.driver(uri, auth=("neo4j", "ouiouioui"), encrypted=False) as 
 
                 merge_entity(session, "Playlist", **{k : playlist[k] for k in ['description', 'id', "uri", 'name']})
                 for track in playlist_tracks["items"]:
+                    if not "track" in track.keys():
+                        print("track ignored")
+                        continue
+
                     for artist in track["track"]["artists"]:
                         try:
                             merge_entity(session, "Artist", **{k : artist[k] for k in ['id', 'name', 'uri']})

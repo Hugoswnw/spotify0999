@@ -1,3 +1,6 @@
+from datetime import date
+
+
 def merge_entity(tx, entity_name, **props):
     props = {k: v for k, v in props.items() if v is not None}
     added_keys = ", ".join([f"{k}: ${k}" for k in props.keys()])
