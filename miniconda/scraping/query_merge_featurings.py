@@ -42,4 +42,7 @@ while True:
     artist = artists.sample(n=1, weights="score").iloc[0]
     artist_id, distance = artist["id"], artist["distance"]
     print(artist["name"])
-    query_merge_artist_tracks(artist_id)
+    try:
+        query_merge_artist_tracks(artist_id)
+    except Exception as e:
+        print(e)
